@@ -3,8 +3,10 @@ import requests
 import csv
 import textMyself
 from netaddr import *
-from twilio.rest import TwilioRestClient
 
+
+ip_phone = 0
+match_phones = 0
 
 iprange = (IPRange('beginning range', 'end range'))
 
@@ -22,10 +24,12 @@ for ip in iprange:
             verify_cisco = re.compile(r'(ip phone)', re.I)  # See if 'IP Phone' is on the page (Ignore case)
             mo = verify_cisco.search(r.text)
             print('*** I found one! ' + mo.group())
+            ip_phone += 1
 
             if mo is not None:
                 typeRegex = re.compile(r'(7942G|7962G|7911|7925)')  # Filtering out only 7942Gs,7962Gs, 7911s,7925s
                 mo2 = typeRegex.search(r.text)
+                match_phones += 1
 
                 if mo2 is not None:
                     print(mo2.group())
@@ -40,5 +44,6 @@ for ip in iprange:
     except Exception as err:
         'There was an error'
 
-
-textMyself.textmyself('The task completed.')
+textMyself.textmyself('The task completed. ' +
+                      ip_phone + ' IP phones. ' +
+                      match_phones + ' matching phones.')
