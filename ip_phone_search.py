@@ -1,6 +1,7 @@
 import re
 import requests
 import csv
+import textMyself
 from netaddr import *
 from twilio.rest import TwilioRestClient
 
@@ -40,11 +41,4 @@ for ip in iprange:
         'There was an error'
 
 
-# Text me when complete
-accountSID = 'ACxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
-authToken = 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
-twilioCli = TwilioRestClient(accountSID, authToken)
-myTwilioNumber = '+xxxxxxxxxxx'
-myCellPhone = '+xxxxxxxxxxx'
-message = twilioCli.messages.create(body='IP Phone search completed',
-                                    from_=myTwilioNumber, to=myCellPhone)
+textMyself.textmyself('The task completed.')
