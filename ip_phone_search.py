@@ -1,12 +1,14 @@
 import re
 import requests
 import csv
+import time
 import textMyself
 from netaddr import *
 
 
 ip_phone = 0
 match_phones = 0
+start_time = time.time()
 
 iprange = (IPRange('beginning range', 'end range'))
 
@@ -44,6 +46,10 @@ for ip in iprange:
     except Exception as err:
         'There was an error'
 
-textMyself.textmyself('The task completed. ' +
-                      ip_phone + ' IP phones. ' +
-                      match_phones + ' matching phones.')
+print('The scan took', round(time.time() - start_time), 'seconds to run.')
+print(ip_phone, 'IP phones.')
+print(match_phones, 'Matching phones.')
+
+textMyself.textmyself('The task completed.',
+                      ip_phone, 'IP phones.',
+                      match_phones, 'matching phones.')
