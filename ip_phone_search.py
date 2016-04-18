@@ -46,10 +46,12 @@ for ip in iprange:
     except Exception as err:
         'There was an error'
 
-print('The scan took', round(time.time() - start_time), 'seconds to run.')
+scan_time = round(time.time() - start_time)
+print('The scan took', scan_time, 'seconds to run.')
 print(ip_phone, 'IP phones.')
 print(match_phones, 'Matching phones.')
 
 textMyself.textmyself('The task completed.',
                       ip_phone, 'IP phones.',
-                      match_phones, 'matching phones.')
+                      match_phones, 'matching phones.',
+                      'The scan took', scan_time, 'seconds to run.')
