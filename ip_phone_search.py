@@ -1,16 +1,44 @@
 import re
 import requests
 import csv
+import lxml.html
 import time
 import textMyself
 from netaddr import *
 
 
+iprange = (IPRange('beginning range', 'end range'))
+
 ip_phone = 0
 match_phones = 0
 start_time = time.time()
 
-iprange = (IPRange('beginning range', 'end range'))
+
+def scrape(r):
+    # Parse html table into a list using xpath expressions
+    doc = lxml.html.fromstring(r.text)
+    stuff = (doc.xpath('.//b/text()'))
+
+    # Use dict comprehension to convert list into dict
+    d = dict([(k, v) for k, v in zip(stuff[::2], stuff[1::2])])
+
+    # Gather the dict values into variables
+    mac = (d.get(' MAC Address'))
+    hname = (d.get(' Host Name'))
+    serial = (d.get(' Serial Number'))
+    modelnum = (d.get(' Model Number'))
+    appload = (d.get(' App Load ID'))
+    bootload = (d.get(' Boot Load ID'))
+    hdware = (d.get(' Hardware Revision'))
+
+    # Write data to csv file
+    with open('IP_Phones.csv', 'a', newline='') as f:
+        more_data = [ip, mac, hname, serial, modelnum, appload, bootload, hdware]
+        writer = csv.writer(f)
+        writer.writerow(more_data)
+
+    # Sanity check
+    print(stuff)
 
 
 for ip in iprange:
@@ -22,36 +50,35 @@ for ip in iprange:
         print(r.status_code)
         print('---------------')
 
+        # If the response is OK,
+        # then search for 'IP phone' via regular expressions
         if r.status_code == 200:
-            verify_cisco = re.compile(r'(ip phone)', re.I)  # See if 'IP Phone' is on the page (Ignore case)
+            verify_cisco = re.compile(r'(ip phone)', re.I)
             mo = verify_cisco.search(r.text)
-            print('*** I found one! ' + mo.group())
+            print('Cisco ' + mo.group())
             ip_phone += 1
 
             if mo is not None:
-                typeRegex = re.compile(r'(7942G|7962G|7911|7925)')  # Filtering out only 7942Gs,7962Gs, 7911s,7925s
+                # If 'ip phone' found,
+                # filter out only these models
+                typeRegex = re.compile(r'(7942G|7962G|7911G|7925G)')
                 mo2 = typeRegex.search(r.text)
-                match_phones += 1
 
                 if mo2 is not None:
-                    print(mo2.group())
-                    serialRegex = re.compile(r'FCH(\w){8}')  # Find Serial Number
-                    serial = serialRegex.search(r.text)
-                    print(serial.group())
-
-                    with open('IP_Phones.csv', 'a') as f:  # Saving serials in a csv
-                        writer = csv.writer(f, delimiter='|', lineterminator='\n')
-                        writer.writerow([serial.group()])
+                    # Model above found
+                    print('***FOUND ONE!***')
+                    match_phones += 1
+                    scrape(r)
 
     except Exception as err:
         'There was an error'
+
 
 scan_time = round(time.time() - start_time)
 print('The scan took', scan_time, 'seconds to run.')
 print(ip_phone, 'IP phones.')
 print(match_phones, 'Matching phones.')
 
-textMyself.textmyself('The task completed.',
-                      ip_phone, 'IP phones.',
-                      match_phones, 'matching phones.',
-                      'The scan took', scan_time, 'seconds to run.')
+textMyself.textmyself('The task completed.{}IP phones. {} matching phones. '
+                      'The scan took {} seconds to run.'.format(ip_phone,
+                      match_phones, scan_time))
