@@ -4,7 +4,7 @@ import csv
 import lxml.html
 import time
 import textMyself
-from netaddr import *
+from netaddr import IPRange
 
 
 iprange = (IPRange('beginning range', 'end range'))
@@ -79,6 +79,6 @@ print('The scan took', scan_time, 'seconds to run.')
 print(ip_phone, 'IP phones.')
 print(match_phones, 'Matching phones.')
 
-textMyself.textmyself('The task completed.{} IP phones. {} matching phones. '
+textMyself.textmyself('The task completed. {} IP phones. {} matching phones. '
                       'The scan took {} seconds to run.'.format(ip_phone,
                       match_phones, scan_time))
