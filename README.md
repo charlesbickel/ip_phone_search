@@ -6,6 +6,7 @@ It saves that data to a csv and texts me when the scan completes.
 
 ## Motivation
 Certain models of Cisco IP phones were manufactured with faulty memory components as documented below.
+We wanted to work with Cisco to replace them and they needed detailed info about the phones.
 
 http://www.cisco.com/c/en/us/support/docs/field-notices/637/fn63772.htm
 
